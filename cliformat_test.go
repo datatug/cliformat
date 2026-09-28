@@ -2,6 +2,7 @@ package cliformat_test
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"testing"
 
@@ -87,5 +88,29 @@ func TestAddFlag_And_GetFormat(t *testing.T) {
 	got := cliformat.GetFormat(cmd)
 	if got != "name" {
 		t.Errorf("expected default 'name', got %q", got)
+	}
+}
+
+type errWriter struct{}
+
+func (errWriter) Write([]byte) (int, error) {
+	return 0, io.ErrClosedPipe
+}
+
+func TestWriteList_Errors(t *testing.T) {
+	// Name format writer error
+	if err := cliformat.WriteList(errWriter{}, "name", testItems, nameOf); err == nil {
+		t.Fatal("expected error with errWriter in name format")
+	}
+
+	// YAML format writer error
+	if err := cliformat.WriteList(errWriter{}, "yaml", testItems, nameOf); err == nil {
+		t.Fatal("expected error with errWriter in yaml format")
+	}
+
+	// JSON marshal error
+	unmarshalable := []chan int{make(chan int)}
+	if err := cliformat.WriteList(&bytes.Buffer{}, "json", unmarshalable, func(c chan int) string { return "" }); err == nil {
+		t.Fatal("expected error with unmarshalable type in json format")
 	}
 }
