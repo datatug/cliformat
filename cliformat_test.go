@@ -23,6 +23,7 @@ var testItems = []item{
 func nameOf(i item) string { return i.Name }
 
 func TestWriteList_Name(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	if err := cliformat.WriteList(&buf, "name", testItems, nameOf); err != nil {
 		t.Fatal(err)
@@ -34,6 +35,7 @@ func TestWriteList_Name(t *testing.T) {
 }
 
 func TestWriteList_EmptyFormat_FallsBackToName(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	if err := cliformat.WriteList(&buf, "", testItems, nameOf); err != nil {
 		t.Fatal(err)
@@ -44,6 +46,7 @@ func TestWriteList_EmptyFormat_FallsBackToName(t *testing.T) {
 }
 
 func TestWriteList_YAML(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	if err := cliformat.WriteList(&buf, "yaml", testItems, nameOf); err != nil {
 		t.Fatal(err)
@@ -55,6 +58,7 @@ func TestWriteList_YAML(t *testing.T) {
 }
 
 func TestWriteList_JSON(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	if err := cliformat.WriteList(&buf, "json", testItems, nameOf); err != nil {
 		t.Fatal(err)
@@ -71,6 +75,7 @@ func TestWriteList_JSON(t *testing.T) {
 }
 
 func TestWriteList_UnknownFormat(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	err := cliformat.WriteList(&buf, "xml", testItems, nameOf)
 	if err == nil {
@@ -82,6 +87,7 @@ func TestWriteList_UnknownFormat(t *testing.T) {
 }
 
 func TestAddFlag_And_GetFormat(t *testing.T) {
+	t.Parallel()
 	cmd := &cobra.Command{Use: "test"}
 	cliformat.AddFlag(cmd, "name")
 
@@ -98,6 +104,7 @@ func (errWriter) Write([]byte) (int, error) {
 }
 
 func TestWriteList_Errors(t *testing.T) {
+	t.Parallel()
 	// Name format writer error
 	if err := cliformat.WriteList(errWriter{}, "name", testItems, nameOf); err == nil {
 		t.Fatal("expected error with errWriter in name format")
